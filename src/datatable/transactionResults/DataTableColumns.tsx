@@ -3,30 +3,51 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "../DataTableColumnHeader";
 import { DataTableRowActions } from "../DataTableRowOptions";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { Product } from "@/types/Product";
+import { Transaction } from "../../types/transaction";
 
-export const columns: ColumnDef<Product>[] = [
+export const columns: ColumnDef<Transaction>[] = [
     {
-        accessorKey: "id",
-        header: ({ column }) => (<DataTableColumnHeader column={column} title="Id" />),
+        accessorKey: "timeStamp",
+        header: ({ column }) => (<DataTableColumnHeader column={column} title="Timestamp" />),
         cell: ({ row }) => {
             return (
-                <Button variant="link" asChild>
-                    <Link href={`#`}>{row.getValue("id")}</Link>
-                </Button>
+                row.getValue("timeStamp")
             );
         }
     },
     {
-        accessorKey: "productName",
-        header: ({ column }) => (<DataTableColumnHeader column={column} title="Product Name" />),
+        accessorKey: "value",
+        header: ({ column }) => (<DataTableColumnHeader column={column} title="Value" />),
         cell: ({ row }) => {
             return (
-                <Button variant="link" asChild>
-                    <Link href={`#`}>{row.getValue("productName")}</Link>
-                </Button>
+                row.getValue("value")
+            );
+        }
+    },
+    {
+        accessorKey: "hash",
+        header: ({ column }) => (<DataTableColumnHeader column={column} title="Transaction Hash" />),
+        cell: ({ row }) => {
+            return (
+                row.getValue("hash")
+            );
+        }
+    },
+    {
+        accessorKey: "from",
+        header: ({ column }) => (<DataTableColumnHeader column={column} title="From Address" />),
+        cell: ({ row }) => {
+            return (
+                row.getValue("from")
+            );
+        }
+    },
+    {
+        accessorKey: "to",
+        header: ({ column }) => (<DataTableColumnHeader column={column} title="To Address" />),
+        cell: ({ row }) => {
+            return (
+                row.getValue("to")
             );
         }
     },

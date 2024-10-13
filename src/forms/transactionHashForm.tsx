@@ -33,7 +33,7 @@ export default function TransactionHashForm({ setTransactionHash }: Props) {
     const form = useForm<z.infer<typeof transactionHashFormSchema>>({
         resolver: zodResolver(transactionHashFormSchema),
         defaultValues: {
-            transactionHash:  "0xd18fea3de3545393c2b5c572a3495a2664aab00884fd9963f2914b5118c09d36"
+            transactionHash:  ""
         }
     })
 

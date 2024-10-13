@@ -33,27 +33,33 @@ export default function TimestampForm({transactionQuery, setTransactionQuery}: P
     })
 
     function onSubmit(values: z.infer<typeof transactionHashFormSchema>) {
-        // const startTimestamp = values.startTime.getTime()/1000;
-        // const endTimestamp = values.endTime.getTime()/1000;
+        const startTimestamp = values.startTime.getTime()/1000;
+        const endTimestamp = values.endTime.getTime()/1000;
 
-        // setTimerange([startTimestamp, endTimestamp])
-        const newQuery = transactionQuery;
-        newQuery[0] = "20850190"
-        newQuery[1] = "20893217"
-        setTransactionQuery(newQuery);
+        setTimerange([startTimestamp, endTimestamp])
     }
 
-    // useEffect(() => {
-    //     const getBlockNumber = async () => {
-    //         const response = await fetch("/api/block/time?" + new URLSearchParams({
-    //             startTimestamp: timerange[0].toString(),
-    //             endTimestamp: timerange[1].toString(),
-    //         }))
-    //         const result = await response.json();
-    //         console.log(result)
-    //     }
-    //     getBlockNumber();
-    // }, [timerange])
+    useEffect(() => {
+        const getBlockNumber = async () => {
+            const response = await fetch("/api/block/time?" + new URLSearchParams({
+                startTimestamp: timerange[0].toString(),
+                endTimestamp: timerange[1].toString(),
+            }))
+            const result = await response.json();
+            const newQuery = [...transactionQuery];
+            newQuery[0] = result[0].toString();
+            newQuery[1] = result[1].toString();
+            console.log(newQuery);
+            setTransactionQuery(newQuery);
+        }
+        if (timerange[0] && timerange[1]) {
+            console.log("searching for " + timerange[0].toString() + timerange[1].toString());
+            getBlockNumber();
+            console.log("done searching");
+        } else {
+            console.log("lol")
+        }
+    }, [timerange])
 
     return (
         <Card>

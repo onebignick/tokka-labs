@@ -1,18 +1,25 @@
 "use client"
 import TotalTransactionFeeInUsdt from "@/components/TotalTransactionFeeInUsdt";
+import TotalTransactionFeeInEther from "@/components/TotalTransactionFeeInEther";
 import TransactionHashForm  from "@/forms/transactionHashForm"
 import TimestampForm from "@/forms/timestampForm";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import useBinanceWebSocket from "@/hooks/useBinanceWebsocket";
-import { calculateGasCostInEther } from "@/lib/transaction";
 import { TransactionReceipt } from "ethers";
 import { useEffect, useState } from "react";
+import { DataTable } from "@/datatable/DataTable";
+import { columns } from "@/datatable/transactionResults/DataTableColumns";
+import { Transaction } from "@/types/transaction";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const [transaction, setTransaction] = useState<TransactionReceipt>();
   const [transactionHash, setTransactionHash] = useState<string>("");
-  const [transactionQuery, setTransactionQuery] = useState<string[]>(["20850190", "20893217", "1", "50"])
+  const [totalGasUsed, setTotalGasUsed] = useState<bigint>();
+  const [averageGasPrice, setAverageGasPrice] = useState<bigint>();
+  const [transactionQuery, setTransactionQuery] = useState<string[]>(["", "", "1", "50"])
+  const [transactionData, setTransactionData] = useState<Transaction[]>([])
   const price = useBinanceWebSocket('ethusdt');
 
   
@@ -37,6 +44,9 @@ export default function Home() {
 
   useEffect(() => {
     const fetchTransactionByRange = async () => {
+      console.log("transaction Query " + transactionQuery)
+      if (!transactionQuery[0] || !transactionQuery[1]) {return;}
+      console.log("pulling transaction");
       try {
         const transaction = await fetch("/api/transaction/time?" + new URLSearchParams({
           startBlock: transactionQuery[0],
@@ -45,14 +55,30 @@ export default function Home() {
           offset: transactionQuery[3]
         }).toString())
         const transactionData = await transaction.json();
-        console.log(transactionData)
+        setTransactionData(transactionData.result);
       } catch (error) {
         console.log(error)
       }
     }
-
+    
     fetchTransactionByRange();
+    console.log(transactionQuery);
+
   }, [transactionQuery])
+  
+  useEffect(() => {
+    if (transactionData.length > 0) {
+      let gasUsed: bigint = BigInt(0);
+      let gasPrice: bigint = BigInt(0);
+      for (let i=0;i<transactionData.length;i++) {
+        gasUsed += BigInt(transactionData[i].gasUsed);
+        gasPrice += BigInt(transactionData[i].gasPrice);
+      }
+
+      setAverageGasPrice(gasPrice/BigInt(transactionData.length))
+      setTotalGasUsed(gasUsed);
+    }
+  }, [transactionData])
 
   return (
     <div className="flex flex-col gap-4">
@@ -72,22 +98,17 @@ export default function Home() {
               )}
           </CardContent>
         </Card>
-        <TotalTransactionFeeInUsdt totalGasUsed={transaction?.gasUsed} averageGasPrice={transaction?.gasPrice} currentUsdtEthPrice={price}/>
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              Total Ether transaction fee
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-              {transaction? calculateGasCostInEther(transaction.gasUsed, transaction.gasPrice) : <p>Loading...</p>}
-          </CardContent>
-        </Card>
+        <TotalTransactionFeeInUsdt totalGasUsed={totalGasUsed} averageGasPrice={averageGasPrice} currentUsdtEthPrice={price}/>
+        <TotalTransactionFeeInEther totalGasUsed={totalGasUsed} averageGasPrice={averageGasPrice}/>
       </div>
       <div className="flex gap-4 justify-evenly">
         <TransactionHashForm setTransactionHash={setTransactionHash}/>
         <TimestampForm transactionQuery={transactionQuery} setTransactionQuery={setTransactionQuery}/>
       </div>
+      <div>
+        <DataTable columns={columns} data={transactionData}/>
+      </div>
+      <Button onClick={() => console.log(transactionQuery)}>test</Button>
     </div>
   );
 }
