@@ -1,9 +1,39 @@
 "use client"
+import TotalTransactionFeeInUsdt from "@/components/TotalTransactionFeeInUsdt";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import useBinanceWebSocket from "@/hooks/useBinanceWebsocket";
+import { calculateGasCostInEther, calculateGasCostInUsdt } from "@/lib/transaction";
+import { TransactionReceipt } from "ethers";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [transaction, setTransaction] = useState<TransactionReceipt>();
+  const [transactionHash, setTransactionHash] = useState<string>("");
   const price = useBinanceWebSocket('ethusdt');
+  // const transactionHash = "0xd18fea3de3545393c2b5c572a3495a2664aab00884fd9963f2914b5118c09d36"
+  
+  useEffect(() => {
+    const fetchTransactionByHash = async () => {
+      if (!transactionHash) return;
+
+      try {
+        const transactionData = await fetch("/api/transaction?" + new URLSearchParams({
+          transactionHash: transactionHash
+        }).toString());
+        const newTransaction = await transactionData.json();
+        setTransaction(newTransaction);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchTransactionByHash();
+  },[transactionHash])
+
+  function handleTransactionHash(hash:string) {
+    setTransactionHash(hash)
+  }
 
   return (
     <div>
@@ -23,17 +53,19 @@ export default function Home() {
               )}
           </CardContent>
         </Card>
+        <TotalTransactionFeeInUsdt totalGasUsed={transaction?.gasUsed} averageGasPrice={transaction?.gasPrice} currentUsdtEthPrice={price}/>
         <Card>
           <CardHeader>
             <CardTitle>
-              Total usdt transaction fee
+              Total Ether transaction fee
             </CardTitle>
           </CardHeader>
           <CardContent>
-              0
+              {transaction? calculateGasCostInEther(transaction.gasUsed, transaction.gasPrice) : <p>Loading...</p>}
           </CardContent>
         </Card>
       </div>
+      <Button onClick={() => handleTransactionHash("0xd18fea3de3545393c2b5c572a3495a2664aab00884fd9963f2914b5118c09d36")}>test</Button>
     </div>
   );
 }
