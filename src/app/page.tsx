@@ -1,9 +1,10 @@
 "use client"
 import TotalTransactionFeeInUsdt from "@/components/TotalTransactionFeeInUsdt";
-import { Button } from "@/components/ui/button";
+import  TransactionHashForm  from "@/forms/transactionHashForm"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import useBinanceWebSocket from "@/hooks/useBinanceWebsocket";
-import { calculateGasCostInEther, calculateGasCostInUsdt } from "@/lib/transaction";
+import { calculateGasCostInEther } from "@/lib/transaction";
 import { TransactionReceipt } from "ethers";
 import { useEffect, useState } from "react";
 
@@ -12,6 +13,7 @@ export default function Home() {
   const [transactionHash, setTransactionHash] = useState<string>("");
   const price = useBinanceWebSocket('ethusdt');
   // const transactionHash = "0xd18fea3de3545393c2b5c572a3495a2664aab00884fd9963f2914b5118c09d36"
+
   
   useEffect(() => {
     const fetchTransactionByHash = async () => {
@@ -31,12 +33,8 @@ export default function Home() {
     fetchTransactionByHash();
   },[transactionHash])
 
-  function handleTransactionHash(hash:string) {
-    setTransactionHash(hash)
-  }
-
   return (
-    <div>
+    <div className="flex flex-col gap-4">
       <h1 className="text-center text-5xl">Tokka labs assignment</h1>
       <div className="flex gap-4">
         <Card>
@@ -65,7 +63,9 @@ export default function Home() {
           </CardContent>
         </Card>
       </div>
-      <Button onClick={() => handleTransactionHash("0xd18fea3de3545393c2b5c572a3495a2664aab00884fd9963f2914b5118c09d36")}>test</Button>
+      <div>
+        <TransactionHashForm setTransactionHash={setTransactionHash}/>
+      </div>
     </div>
   );
 }
