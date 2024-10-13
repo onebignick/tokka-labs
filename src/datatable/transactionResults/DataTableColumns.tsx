@@ -1,8 +1,8 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table";
-import { DataTableColumnHeader } from "./DataTableColumnHeader";
-import { DataTableRowActions } from "./DataTableRowOptions";
+import { DataTableColumnHeader } from "../DataTableColumnHeader";
+import { DataTableRowActions } from "../DataTableRowOptions";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Product } from "@/types/Product";
