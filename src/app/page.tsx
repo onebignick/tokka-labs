@@ -10,7 +10,6 @@ import { useEffect, useState } from "react";
 import { DataTable } from "@/datatable/DataTable";
 import { columns } from "@/datatable/transactionResults/DataTableColumns";
 import { Transaction } from "@/types/transaction";
-import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const [transactionHash, setTransactionHash] = useState<string>("");

@@ -8,6 +8,9 @@ export async function GET(request: Request) {
     const page = searchParams.get("page");
     const offset = searchParams.get("offset");
 
-    const response = await getUniswapTransactionsBetweenBlockNumber(startBlock, endBlock, page, offset)
-    return Response.json(response);
+    if (startBlock && endBlock && page && offset) {
+        const response = await getUniswapTransactionsBetweenBlockNumber(startBlock, endBlock, page, offset)
+        return Response.json(response);
+    }
+    return Response.json({message: "Empty Fields"}, {status: 500})
 }

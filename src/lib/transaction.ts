@@ -64,7 +64,8 @@ export async function getUniswapTransactionsBetweenBlockNumber(startBlock: strin
     
 }
 
-export async function blockNumberBinarySearch(timestamp: number, isEnd: boolean) {
+export async function blockNumberBinarySearch(timestampString: string, isEnd: boolean) {
+    const timestamp = Number(timestampString);
     let low = 0;
     let high = await provider.getBlockNumber(); // current latest block number
     let mid;
