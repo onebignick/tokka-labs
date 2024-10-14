@@ -110,7 +110,6 @@ export default function Home() {
       <div>
         <DataTable columns={columns} data={transactionData}/>
       </div>
-      <Button onClick={() => console.log(transactionQuery)}>test</Button>
     </div>
   );
 }
