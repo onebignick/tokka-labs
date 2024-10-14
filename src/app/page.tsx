@@ -6,7 +6,6 @@ import TimestampForm from "@/forms/timestampForm";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import useBinanceWebSocket from "@/hooks/useBinanceWebsocket";
-import { TransactionReceipt } from "ethers";
 import { useEffect, useState } from "react";
 import { DataTable } from "@/datatable/DataTable";
 import { columns } from "@/datatable/transactionResults/DataTableColumns";
@@ -14,7 +13,6 @@ import { Transaction } from "@/types/transaction";
 import { Button } from "@/components/ui/button";
 
 export default function Home() {
-  const [transaction, setTransaction] = useState<TransactionReceipt>();
   const [transactionHash, setTransactionHash] = useState<string>("");
   const [totalGasUsed, setTotalGasUsed] = useState<bigint>();
   const [averageGasPrice, setAverageGasPrice] = useState<bigint>();
@@ -32,8 +30,12 @@ export default function Home() {
           transactionHash: transactionHash
         }).toString());
         const newTransaction = await transactionData.json();
-        console.log(newTransaction);
-        setTransaction(newTransaction);
+
+        console.log("newTransaction")
+        console.log(newTransaction)
+        setTransactionData(newTransaction);
+        console.log("transactionData" + transactionData)
+
       } catch (err) {
         console.error(err);
       }
